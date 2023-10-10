@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import END
 from tkinter import messagebox
 import random
+import pyperclip
+
 
 # ---------------------------- PASSWORD GENERATOR ---------------------------
 
@@ -10,10 +12,8 @@ numbers = list(range(48,58))
 def generate_password():
     global password_entry
     password_entry.delete(0, END)
-    password = ""
-    for x in range(8):
-        random_char = random.choice(capital_letters + numbers)
-        password += chr(random_char)
+    password_list = [chr(random.choice(capital_letters + numbers)) for _ in range(8)]
+    password = "".join(password_list)
     password_entry.insert(0, password)
     
 # ---------------------------- SAVE PASSWORD ------------------------------- #
@@ -23,12 +23,20 @@ def save():
     e_mail = email_entry.get()
     password = password_entry.get()
     
-    with open("Passwords.txt", "a") as data_file:
-        data_file.write(f"| {website} | {e_mail} | {password}\n")
-        website_entry.delete(0,END)
-        email_entry.delete(0, END)
-        password_entry.delete(0, END)    
-        
+    if len(website) == 0 or len(password) == 0:
+        messagebox.showinfo(message="Please fill all the empty spaces!")
+    else:     
+        is_ok = messagebox.askokcancel(title=website, 
+                                   message = f"e-mail: {e_mail}\nPassword: {password}")
+    if is_ok == True:
+        with open("Passwords.txt", "a") as data_file:
+            data_file.write(f"| {website} | {e_mail} | {password}\n")
+            website_entry.delete(0,END)
+            email_entry.delete(0, END)
+            password_entry.delete(0, END)    
+            pyperclip.copy(password)
+    else: 
+        pass       
 # ---------------------------- UI SETUP ------------------------------- #
 
 window = tk.Tk()
