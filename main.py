@@ -3,7 +3,7 @@ from tkinter import END
 from tkinter import messagebox
 import random
 import pyperclip
-
+import json
 
 # ---------------------------- PASSWORD GENERATOR ---------------------------
 
@@ -22,6 +22,8 @@ def save():
     website = website_entry.get()
     e_mail = email_entry.get()
     password = password_entry.get()
+    new_data = {website:{"e-mail" : e_mail,
+                        "Password:": password}}
     
     if len(website) == 0 or len(password) == 0:
         messagebox.showinfo(message="Please fill all the empty spaces!")
@@ -29,14 +31,24 @@ def save():
         is_ok = messagebox.askokcancel(title=website, 
                                    message = f"e-mail: {e_mail}\nPassword: {password}")
     if is_ok == True:
-        with open("Passwords.txt", "a") as data_file:
-            data_file.write(f"| {website} | {e_mail} | {password}\n")
+        try:
+            with open("Passwords.json", "r") as data_file:
+                data = json.load(data_file)
+                data.update(new_data)
+            with open("Passwords.json", "w") as data_file:
+                json.dump(data, data_file, indent=4)   
+        except FileNotFoundError as err:
+            print(f"File {err} not found!")
+            
+            with open("Passwords.json", "w") as data_file:
+                json.dump(new_data, data_file, indent=4)    
+                
+        finally:        
             website_entry.delete(0,END)
             email_entry.delete(0, END)
             password_entry.delete(0, END)    
             pyperclip.copy(password)
-    else: 
-        pass       
+          
 # ---------------------------- UI SETUP ------------------------------- #
 
 window = tk.Tk()
