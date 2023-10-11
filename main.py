@@ -15,7 +15,29 @@ def generate_password():
     password_list = [chr(random.choice(capital_letters + numbers)) for _ in range(8)]
     password = "".join(password_list)
     password_entry.insert(0, password)
+# ---------------------------- SEARCH PASSWORD ------------------------------- #
+
+
+def search_password():
     
+    with open("Passwords.json", "r") as data_file:
+            data = json.load(data_file)
+    
+    website = website_entry.get()
+    for key, value in data.items():
+        if key == website:
+            password = value["Password:"]
+    try:   
+        password_entry.insert(0, password) 
+    except:
+        print("Invalid input!")
+        pass
+    
+        
+
+
+
+
 # ---------------------------- SAVE PASSWORD ------------------------------- #
 
 def save():
@@ -34,14 +56,19 @@ def save():
         try:
             with open("Passwords.json", "r") as data_file:
                 data = json.load(data_file)
+                for key in new_data.keys():
+                    if key in data:
+                        del data[key]
                 data.update(new_data)
-            with open("Passwords.json", "w") as data_file:
-                json.dump(data, data_file, indent=4)   
+                
+            
         except FileNotFoundError as err:
             print(f"File {err} not found!")
-            
             with open("Passwords.json", "w") as data_file:
-                json.dump(new_data, data_file, indent=4)    
+                json.dump(new_data, data_file, indent=4)   
+        else:
+            with open("Passwords.json", "w") as data_file:
+                json.dump(data, data_file, indent=4)    
                 
         finally:        
             website_entry.delete(0,END)
@@ -68,20 +95,22 @@ password_label = tk.Label(text = "Password:")
 password_label.grid(row=3, column = 0)
 
 #Entries
-website_entry = tk.Entry(width=43)
-website_entry.grid(row=1, column=1,columnspan=2)
+website_entry = tk.Entry(width=38)
+website_entry.grid(row=1, column=1)
 website_entry.focus()
-email_entry = tk.Entry(width=43)
+email_entry = tk.Entry(width=48)
 email_entry.grid(row=2, column=1, columnspan=2)
 email_entry.insert(0, "antun.ivic38@gmail.com")
-password_entry = tk.Entry(width = 33)
+password_entry = tk.Entry(width = 38)
 password_entry.grid(row=3, column=1)
 
 #Buttons
-generate_password_button = tk.Button(text = "Generate", command=generate_password)
+generate_password_button = tk.Button(text = "Generate", command=generate_password, width=7)
 generate_password_button.grid(row=3, column=2)
-add_button = tk.Button(text = "Add", command=save)
+add_button = tk.Button(text = "Add", command=save, width=40)
 add_button.grid(row=4, column=1, columnspan=2)
+search_button = tk.Button(text = "Search", width=7, command=search_password)
+search_button.grid(row=1, column=2)
 window.mainloop()  
 
 
