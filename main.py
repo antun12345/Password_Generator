@@ -19,7 +19,6 @@ def generate_password():
 
 
 def search_password():
-    
     with open("Passwords.json", "r") as data_file:
             data = json.load(data_file)
     
